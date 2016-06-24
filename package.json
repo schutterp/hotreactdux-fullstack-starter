@@ -42,7 +42,9 @@
   },
   "dependencies": {
     "express": "^4.14.0",
+    "proxy-middleware": "^0.15.0",
     "react": "^0.14.6",
-    "react-dom": "^0.14.6"
+    "react-dom": "^0.14.6",
+    "url": "^0.11.0"
   }
 }
