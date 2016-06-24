@@ -36,8 +36,18 @@ app.get('/ingredients', function (req, res) {
 	]);
 });
 
+var orderId = 0;
+/**
+ * Create an order. Endpoint returns an id. Fails at random intervals.
+ */
 app.post('/orders', function (req, res) {
-	res.send('not implemented');
+	if (Math.random() * 100 < 20) {
+		return res.sendStatus(500);
+	}
+
+	res.json({
+		id: orderId++
+	});
 });
 
 app.get('/', function(req, res) {
@@ -67,5 +77,5 @@ assetServer.listen(3001, 'localhost', function (err, result) {
 });
 
 app.listen(3000, function () {
-	console.log('API server listening at http://localhost:3000/ and proxying to assets at 3001');
+	console.log('API server listening at http://localhost:3000/');
 });
