@@ -11,13 +11,44 @@ var app = express();
 // proxy the request for static assets
 app.use('/static', proxy(url.parse('http://localhost:3001/static')));
 
-app.get('/*', function(req, res) {
+app.get('/ingredients', function (req, res) {
+	res.json([
+		{
+			name: 'pepperoni',
+			unitsAvailable: 10
+		},
+		{
+			name: 'mushroom',
+			unitsAvailable: 5
+		},
+		{
+			name: 'cheese',
+			unitsAvailable: 15
+		},
+		{
+			name: 'tomatoSauce',
+			unitsAvailable: 10
+		},
+		{
+			name: 'dough',
+			unitsAvailable: 10
+		}
+	]);
+});
+
+app.post('/orders', function (req, res) {
+	res.send('not implemented');
+});
+
+app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/index.html');
 });
 
 
 var assetServer = new WebpackDevServer(webpack(config), {
-	// historyApiFallback: true
+	historyApiFallback: {
+		index: config.output.publicPath
+	},
 	contentBase: __dirname,
 	hot: true,
 	quiet: false,
