@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import reducers from './modules/reducers'
-import PizzaApp from './containers/app';
+import PizzaOrderForm from './containers/order-form';
 
 function configureStore(initialState) {
 	const store = createStore(reducers, initialState,
@@ -16,7 +16,7 @@ const store = configureStore();
 
 render(
 	<Provider store={store}>
-		<PizzaApp />
+		<PizzaOrderForm />
 	</Provider>,
 	document.getElementById('root')
 );
