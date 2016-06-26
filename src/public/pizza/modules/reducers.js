@@ -1,4 +1,6 @@
 import {combineReducers} from 'redux';
+import {createSelector} from 'reselect';
+import _ from 'lodash';
 
 const initialInventory = [
 	{
@@ -33,6 +35,7 @@ const menuItems = [
 		id: 1,
 		desc: 'cheese',
 		size: 'small',
+		price: 5,
 		ingredients: {
 			dough: 1,
 			tomatoSauce: 1,
@@ -43,6 +46,7 @@ const menuItems = [
 		id: 2,
 		desc: 'cheese',
 		size: 'large',
+		price: 8,
 		ingredients: {
 			dough: 2,
 			tomatoSauce: 2,
@@ -53,6 +57,7 @@ const menuItems = [
 		id: 3,
 		desc: 'pepperoni',
 		size: 'small',
+		price: 7,
 		ingredients: {
 			dough: 1,
 			tomatoSauce: 1,
@@ -64,6 +69,7 @@ const menuItems = [
 		id: 4,
 		desc: 'pepperoni',
 		size: 'large',
+		price: 10,
 		ingredients: {
 			dough: 2,
 			tomatoSauce: 2,
@@ -116,3 +122,43 @@ export default combineReducers({
 	order,
 	menu
 });
+
+function getIngredientsForOrder(ordersById = {}, menuItems = []) {
+	let result = {};
+	_.forEach(ordersById, (qty, id) => {
+		const menuItem = _.find(menuItems, {id: parseInt(id, 10)});
+		result = _.reduce(_.get(menuItem, 'ingredients', {}), (memo, units, name) => {
+			if (!result[name]) {
+				memo[name] = units * qty;
+			} else {
+				memo[name] = result[name] + units * qty;
+			}
+			return memo;
+		}, result);
+	});
+	return result;
+}
+
+const getOrdersById = (state) => _.get(state, 'order.items', {});
+const getMenuItems = (state) => _.get(state, 'menu.items', []);
+const getInventoryItems = (state) => _.get(state, 'inventory.items', []);
+
+export const getRemainingInventory = createSelector(
+	[getOrdersById, getMenuItems, getInventoryItems],
+	(ordersById, menuItems, inventoryItems) => {
+		const ingredients = getIngredientsForOrder(ordersById, menuItems);
+		return inventoryItems.map((item) => (
+			{
+				...item,
+				unitsAvailable: item.unitsAvailable - _.get(ingredients, item.name, 0)
+			}
+		));
+	}
+)
+
+export function hasEnoughInventory(state, ingredients = {}) {
+	const inventory = getRemainingInventory(state);
+	return _.every(ingredients, (qty, name) => (
+		_.get(_.find(inventory, {name}), 'unitsAvailable', 0) >= qty
+	));
+}

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import {hasIngredientsInInventory, getRemainingInventory} from '../modules/selectors';
+import {hasEnoughInventory, getRemainingInventory} from '../modules/reducers';
 import MenuItem from '../components/menu-item';
 
 class PizzaOrderForm extends Component {
@@ -11,7 +11,7 @@ class PizzaOrderForm extends Component {
 	}
 
 	onSubmit() {
-		this.props.onSubmitOrder(this.props.orderItems, this.props.remainingInventory);
+		this.props.onSubmitOrder(this.props.ordersById, this.props.remainingInventory);
 	}
 
 	render() {
@@ -44,7 +44,7 @@ PizzaOrderForm.propTypes = {
 		qty: PropTypes.number.isRequired,
 		isAvailable: PropTypes.bool.isRequired
 	})),
-	orderItems: PropTypes.object.isRequired,
+	ordersById: PropTypes.object.isRequired,
 	remainingInventory: PropTypes.array.isRequired,
 	onSubmitOrder: PropTypes.func.isRequired,
 	onClearOrder: PropTypes.func.isRequired,
@@ -52,10 +52,9 @@ PizzaOrderForm.propTypes = {
 };
 
 function mapStateToProps(state) {
-	const remainingInventory = getRemainingInventory(state.inventory.items, state.order.items, state.menu.items);
 	return {
-		orderItems: state.order.items,
-		remainingInventory,
+		ordersById: state.order.items,
+		remainingInventory: getRemainingInventory(state),
 		menuItems: state.menu.items.map((item) => {
 			return {
 				id: item.id,
@@ -63,7 +62,7 @@ function mapStateToProps(state) {
 				size: item.size,
 				// TAKE NOTE: tough bug due to numeric keys: 'order.items[item.id]' was borked!
 				qty: _.get(state, `order.items.${item.id}`, 0),
-				isAvailable: hasIngredientsInInventory(remainingInventory, item.ingredients)
+				isAvailable: hasEnoughInventory(state, item.ingredients)
 			};
 		})
 	}
