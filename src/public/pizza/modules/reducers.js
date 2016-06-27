@@ -1,5 +1,3 @@
-import {combineReducers} from 'redux';
-
 const initialInventory = [
 	{
 		id: 1,
@@ -76,47 +74,3 @@ const menuItems = [
 		}
 	}
 ];
-
-function inventory(state = {items: initialInventory}, action) {
-	switch (action.type) {
-		case 'SUBMIT_ORDER':
-			return {
-				...state,
-				items: action.payload.remainingInventory
-			};
-		default:
-			return state;
-	}
-}
-
-function order(state = {items: {}}, action) {
-	switch (action.type) {
-		case 'UPDATE_ITEM_QTY':
-			const {id, qty} = action.payload.item;
-			return {
-				...state,
-				items: {
-					...state.items,
-					[id]: qty
-				}
-			};
-		case 'SUBMIT_ORDER':
-		case 'CANCEL_ORDER':
-			return {
-				...state,
-				items: {}
-			};
-		default:
-			return state;
-	}
-}
-
-function menu(state = {items: menuItems}, action) {
-	return state;
-}
-
-export default combineReducers({
-	inventory,
-	order,
-	menu
-});
