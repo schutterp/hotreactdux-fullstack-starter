@@ -1,32 +1,9 @@
 import {combineReducers} from 'redux';
 
-const initialInventory = [
-	{
-		id: 1,
-		name: 'pepperoni',
-		unitsAvailable: 10
-	},
-	{
-		id: 2,
-		name: 'mushroom',
-		unitsAvailable: 5
-	},
-	{
-		id: 3,
-		name: 'cheese',
-		unitsAvailable: 15
-	},
-	{
-		id: 4,
-		name: 'tomatoSauce',
-		unitsAvailable: 10
-	},
-	{
-		id: 5,
-		name: 'dough',
-		unitsAvailable: 10
-	}
-];
+const initialInventoryState = {
+	items: [],
+	isFetching: false
+};
 
 const menuItems = [
 	{
@@ -77,8 +54,24 @@ const menuItems = [
 	}
 ];
 
-function inventory(state = {items: initialInventory}, action) {
+function inventory(state = initialInventoryState, action) {
 	switch (action.type) {
+		case 'REQUEST_INVENTORY':
+			return {
+				...state,
+				isFetching: true
+			};
+		case 'RECEIVE_INVENTORY':
+			return {
+				...state,
+				isFetching: false,
+				items: action.payload.items
+			};
+		case 'ERROR_INVENTORY':
+			return {
+				...state,
+				isFetching: false
+			};
 		case 'SUBMIT_ORDER':
 			return {
 				...state,

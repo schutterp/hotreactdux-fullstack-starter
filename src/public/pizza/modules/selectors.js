@@ -17,9 +17,10 @@ function getIngredientsForOrder(ordersById = {}, menuItems = []) {
 	return result;
 }
 
-const getOrdersById = (state) => _.get(state, 'order.items', {});
-const getMenuItems = (state) => _.get(state, 'menu.items', []);
-const getInventoryItems = (state) => _.get(state, 'inventory.items', []);
+export const getOrdersById = (state) => _.get(state, 'order.items', {});
+export const getMenuItems = (state) => _.get(state, 'menu.items', []);
+export const getInventoryItems = (state) => _.get(state, 'inventory.items', []);
+export const isFetchingInventory = (state) => _.get(state, 'inventory.isFetching', false);
 
 export const getRemainingInventory = createSelector(
 	[getOrdersById, getMenuItems, getInventoryItems],

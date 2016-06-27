@@ -1,8 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import {hasEnoughInventory} from '../modules/selectors';
-import {submitOrder, updateItemQty, cancelOrder} from '../modules/actions';
+import {
+	hasEnoughInventory,
+	getOrdersById,
+	getMenuItems,
+	isFetchingInventory
+} from '../modules/selectors';
+import {submitOrder, updateItemQty, cancelOrder, fetchInventory} from '../modules/actions';
 import MenuItem from '../components/menu-item';
 
 class PizzaOrderForm extends Component {
@@ -11,12 +16,25 @@ class PizzaOrderForm extends Component {
 		this.onSubmit = this.onSubmit.bind(this);
 	}
 
+	componentWillMount() {
+		this.props.onComponentWillMount();
+	}
+
 	onSubmit() {
 		this.props.onSubmitOrder(this.props.ordersById);
 	}
 
 	render() {
-		const { menuItems, onUpdateItemQty, onSubmitOrder, onClearOrder } = this.props;
+		const {
+			menuItems,
+			onUpdateItemQty,
+			onSubmitOrder,
+			onClearOrder,
+			isFetchingInventory
+		} = this.props;
+		if (isFetchingInventory) {
+			return <span>loading...</span>;
+		}
 		return (
 			<div>
 				{menuItems.map((type) => (
@@ -46,6 +64,7 @@ PizzaOrderForm.propTypes = {
 		isAvailable: PropTypes.bool.isRequired
 	})),
 	ordersById: PropTypes.object.isRequired,
+	isFetchingInventory: PropTypes.bool,
 	onSubmitOrder: PropTypes.func.isRequired,
 	onClearOrder: PropTypes.func.isRequired,
 	onUpdateItemQty: PropTypes.func.isRequired
@@ -53,8 +72,9 @@ PizzaOrderForm.propTypes = {
 
 function mapStateToProps(state) {
 	return {
-		ordersById: state.order.items,
-		menuItems: state.menu.items.map((item) => {
+		isFetchingInventory: isFetchingInventory(state),
+		ordersById: getOrdersById(state),
+		menuItems: getMenuItems(state).map((item) => {
 			return {
 				id: item.id,
 				desc: item.desc,
@@ -69,6 +89,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return {
+		onComponentWillMount: () => dispatch(fetchInventory()),
 		onSubmitOrder: (order) => dispatch(submitOrder(order)),
 		onClearOrder: () => dispatch(cancelOrder()),
 		onUpdateItemQty: (item) => dispatch(updateItemQty(item))
