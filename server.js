@@ -14,7 +14,7 @@ app.use('/static', proxy(url.parse('http://localhost:3001/static')));
 /**
  * Fetch yourself some ingredients for making pizza!
  */
-app.get('/ingredients', function (req, res) {
+app.get('/inventory', function (req, res) {
 	res.json([
 		{
 			id: 1,
