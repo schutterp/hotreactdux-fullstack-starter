@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import {hasEnoughInventory, getRemainingInventory} from '../modules/reducers';
+import {hasEnoughInventory} from '../modules/reducers';
+import {submitOrder, updateItemQty, cancelOrder} from '../modules/actions';
 import MenuItem from '../components/menu-item';
 
 class PizzaOrderForm extends Component {
@@ -11,7 +12,7 @@ class PizzaOrderForm extends Component {
 	}
 
 	onSubmit() {
-		this.props.onSubmitOrder(this.props.ordersById, this.props.remainingInventory);
+		this.props.onSubmitOrder(this.props.ordersById);
 	}
 
 	render() {
@@ -45,7 +46,6 @@ PizzaOrderForm.propTypes = {
 		isAvailable: PropTypes.bool.isRequired
 	})),
 	ordersById: PropTypes.object.isRequired,
-	remainingInventory: PropTypes.array.isRequired,
 	onSubmitOrder: PropTypes.func.isRequired,
 	onClearOrder: PropTypes.func.isRequired,
 	onUpdateItemQty: PropTypes.func.isRequired
@@ -54,7 +54,6 @@ PizzaOrderForm.propTypes = {
 function mapStateToProps(state) {
 	return {
 		ordersById: state.order.items,
-		remainingInventory: getRemainingInventory(state),
 		menuItems: state.menu.items.map((item) => {
 			return {
 				id: item.id,
@@ -70,24 +69,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return {
-		onSubmitOrder: (order, remainingInventory) => {
-			dispatch({
-				type: 'SUBMIT_ORDER',
-				payload: {
-					order,
-					remainingInventory
-				}
-			});
-		},
-		onClearOrder: () => dispatch({ type: 'CANCEL_ORDER' }),
-		onUpdateItemQty: (item) => {
-			dispatch({
-				type: 'UPDATE_ITEM_QTY',
-				payload: {
-					item
-				}
-			});
-		}
+		onSubmitOrder: (order) => dispatch(submitOrder(order)),
+		onClearOrder: () => dispatch(cancelOrder()),
+		onUpdateItemQty: (item) => dispatch(updateItemQty(item))
 	};
 }
 
