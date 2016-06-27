@@ -1,4 +1,4 @@
-import {getRemainingInventory} from './reducers';
+import {getRemainingInventory} from './selectors';
 
 export function submitOrder(order) {
 	return (dispatch, getState) => {

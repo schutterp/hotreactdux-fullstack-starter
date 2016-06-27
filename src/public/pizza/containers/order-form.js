@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import {hasEnoughInventory} from '../modules/reducers';
+import {hasEnoughInventory} from '../modules/selectors';
 import {submitOrder, updateItemQty, cancelOrder} from '../modules/actions';
 import MenuItem from '../components/menu-item';
 
